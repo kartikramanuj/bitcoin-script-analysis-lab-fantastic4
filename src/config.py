@@ -1,4 +1,6 @@
 # RPC configuration (make sure these match bitcoin.conf)
+from bitcoinrpc.authproxy import AuthServiceProxy, JSONRPCException
+
 rpc_user = "your_username"
 rpc_password = "your_password"
 rpc_url = "http://%s:%s@127.0.0.1:18443" % (rpc_user, rpc_password)
@@ -15,3 +17,4 @@ def check_connection():
     except Exception as e:
         print("Connection failed")
         print(e)
+
