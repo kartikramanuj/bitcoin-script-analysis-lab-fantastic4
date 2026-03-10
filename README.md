@@ -21,8 +21,8 @@ testing.
 | Name | Roll No | Responsibility |
 |-----|-----|-----|
 | Sakshya Singh Kasera | 240021015 | Analysis and Documentation |
-| Ramanuj Kartik | 240041030 | SegWit Transaction Implementation |
-| Sana Tejasri | 240041033 | Legacy Transaction Implementation |
+| Ramanuj Kartik | 240041030 | Creat Transaction and  Implementation of main file |
+| Sana Tejasri | 240041033 | Decoding , extracting and comparing Transaction Implementation |
 | Vaghasiya Parl | 240041037 | Bitcoin RPC Setup and Environment |
 # Objectives
 
@@ -34,6 +34,14 @@ testing.
 6.  Compare transaction sizes between **Legacy and SegWit formats**.
 
 ------------------------------------------------------------------------
+## ⚙️ Tools & Dependencies  
+- **Bitcoin Core (bitcoind)** – Full Bitcoin node  
+- **Bitcoin CLI (`bitcoin-cli`)** – Command-line interface  
+- **Python (`python-bitcoinlib`, `bitcoinrpc`)** – Bitcoin scripting  
+- **Bitcoin Debugger (`btcdeb`)** – Script validation  
+- **C (`libbitcoin`, `curl` for RPC calls)** – Alternative implementation  
+
+---
 
 # Project Structure
 
@@ -83,17 +91,73 @@ Install the RPC library:
 
 # Bitcoin Regtest Setup
 
-Start Bitcoin node:
+Start Bitcoin node (linux):
 
     bitcoind -regtest -daemon
 
-Create wallet:
+Start Bitcoin node (windows):
 
-    bitcoin-cli -regtest createwallet "labwallet"
+    bitcoind -regtest
 
-Generate spendable coins:
 
-    bitcoin-cli -regtest generatetoaddress 101 $(bitcoin-cli -regtest getnewaddress)
+
+## Configure bitcoin.conf for Regtest:
+```python
+    # Step 1: Locate the Bitcoin data directory
+    # Windows: C:\Users\YourUsername\AppData\Roaming\Bitcoin\
+    # Linux/macOS: ~/.bitcoin/
+
+    # Step 2: If `bitcoin.conf` doesn’t exist, create it
+    touch ~/.bitcoin/bitcoin.conf
+```
+
+   ```ini
+# Step 3: Edit `bitcoin.conf` with the following settings
+[regtest]
+regtest=1
+server=1
+rpcuser=your_username
+rpcpassword=your_password
+rpcallowip=127.0.0.1
+rpcport=18443
+txindex=1
+paytxfee=0.0001
+fallbackfee=0.0002
+mintxfee=0.00001
+txconfirmtarget=6
+```
+
+⚠️ Note: Replace your_username and your_password with your own values.
+
+##  Update Python Script with RPC Credentials
+```python
+# Update the Python script with RPC credentials from bitcoin.conf
+rpc_user = 'your_username'
+rpc_password = 'your_password'
+rpc_port = 18443
+
+# Example: Connect to Bitcoin RPC using requests
+import requests
+
+url = f"http://127.0.0.1:{rpc_port}"
+headers = {"content-type": "application/json"}
+auth = (rpc_user, rpc_password)
+
+response = requests.get(url, auth=auth)
+print(response.json())
+```
+## Useful Commands to Verify Bitcoin Node is Running
+```
+bash
+# Check Bitcoin balance
+bitcoin-cli -regtest getbalance
+
+# Mine a block
+bitcoin-cli -regtest generatetoaddress 1 <your_regtest_address>
+
+# List transactions
+bitcoin-cli -regtest listtransactions
+```
 
 ------------------------------------------------------------------------
 
