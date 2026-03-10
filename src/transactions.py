@@ -42,3 +42,25 @@ def create_transaction(from_addr, to_addr, amount):
     except Exception as e:
         print(f" RPC Error: {e}")
         return None
+
+def decode_transaction(txid):
+    """Decodes a transaction and prints script details"""
+    raw_tx = rpc_connection.getrawtransaction(txid, True)
+    print(f"🔎 Decoded Transaction {txid}:")
+    print(raw_tx)
+    return raw_tx
+
+def extract_challenge_script(txid):
+    raw_tx = rpc_connection.getrawtransaction(txid, True)
+    print(f"  - Locking Script (ScriptPubKey): {raw_tx['vout'][0]['scriptPubKey']['asm']}")
+
+def extract_response_script(txid):
+    raw_tx = rpc_connection.getrawtransaction(txid, True)
+    print(f"  - Unlocking Script (ScriptSig): {raw_tx['vin'][0]['scriptSig']['asm'] if 'scriptSig' in raw_tx['vin'][0] else 'N/A'}")
+
+def compare_transaction_sizes(txid1, txid2):
+    """Compares transaction sizes of Legacy and SegWit transactions"""
+    size1 = rpc_connection.getrawtransaction(txid1, True)["vsize"]
+    size2 = rpc_connection.getrawtransaction(txid2, True)["vsize"]
+    print(f" Legacy Transaction Size: {size1} vbytes")
+    print(f" SegWit Transaction Size: {size2} vbytes")

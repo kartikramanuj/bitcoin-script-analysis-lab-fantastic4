@@ -34,3 +34,18 @@ def fund_address(address, amount=10):
     rpc_connection.generatetoaddress(1, rpc_connection.getnewaddress())
 
     return txid
+def create_wallet(wallet_name="mywallet"):
+    # Create or load wallet
+    try:
+        wallets = rpc_connection.listwallets()
+
+        if wallet_name in wallets:
+            print("Wallet already loaded")
+        else:
+            rpc_connection.loadwallet(wallet_name)
+            print("Wallet loaded")
+
+    except JSONRPCException:
+        print("Wallet not found, creating new wallet")
+        rpc_connection.createwallet(wallet_name)
+        print("Wallet created and loaded")
